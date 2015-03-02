@@ -35,6 +35,19 @@ public:
     string getemail(){return email;}
     int getage()     {return age;}
 
+    void show(string nom, string val) {cout << nom << val << endl;}
+    void show(string nom, int val) {cout << nom << val << endl;}
+
+    void showname () {show("name    : ", name);}
+    void showaddr () {show("address : ", address);}
+    void showcity () {show("city    : ", city);}
+    void showstate() {show("state   : ", state);}
+    void showzip  () {show("zip     : ", zip);}
+    void showphone() {show("phone   : ", phone);}
+    void showcell () {show("cell    : ", cell);}
+    void showemail() {show("email   : ", email);}
+    void showage  () {show("age     : ", age);}
+
     // Static type-safe functions for acquiring input from the user
     // after presenting a prompt for the input.
     //
@@ -100,6 +113,8 @@ public:
     void savepeople();
     void loadpeople();
     void loadpeople(string fname);
+    void viewpeople();
+    void viewpeople(string fname);
     void getmenu(string fname);
 
 private:
@@ -349,6 +364,58 @@ void addrbook::loadpeople(string fname)
     }
 }
 
+void addrbook::viewpeople()
+{
+    string fname;
+    ifstream file;
+
+    cout << "\n\tName the Address Book file you want to open\n"
+         << "\tYou can include the directory in the name.\n"
+         << "\tYou can start a new Address Book by simply\n"
+         << "\tpressing he RETURN or ENTER key now.\n\n";
+
+    fname = person::getstr("Type a file name: ");
+    if (fname == "")
+        return;
+
+    fname = fname + ".dat";
+    loadpeople(fname);
+}
+
+void addrbook::viewpeople(string fname)
+{
+    int size;
+    ifstream file;
+
+    cout << "Opening Address Book from file: " << fname << endl;
+    file.open(fname.c_str());
+
+    if(!file.is_open()) {
+        cout << "\n\tCannot open file: " << fname << endl
+             << "\tYou can look for your Address Book file and press \"l\"\n"
+             << "\tto load it when you find it, or you can start a new\n"
+             << "\tAddress Book file by pressing \"a\" now.\n\n";
+        return;
+    }
+
+    file >> size;
+    cout << "Address Book " << fname << " contains " << size << " records.\n";
+
+    for(int i = 0; i < size; i++) {
+        people.resize(people.size() + 1);
+        person& p = people[i];
+        p.showname  ();
+        p.showaddr ();
+        p.showcity ();
+        p.showstate();
+        p.showzip  ();
+        p.showphone();
+        p.showcell ();
+        p.showemail();
+        p.showage  ();
+    }
+}
+
 void addrbook::showmenu()
 {
     cout << endl << "Select a menu item by pressing a number." << endl;
@@ -358,6 +425,7 @@ void addrbook::showmenu()
     cout << "d - Delete an address book entry" << endl;
     cout << "l - Load the address book from a file" << endl;
     cout << "s - Save the address book to a file" << endl;
+    cout << "v - View the contents of the address book" << endl;
     cout << "q - Quit the program" << endl << endl;
     cout << "Your choice: ";
 }
@@ -380,6 +448,7 @@ void addrbook::getmenu(string fname)
         case 'd': deleteperson(); break;
         case 'l': loadpeople(); break;
         case 's': savepeople(); break;
+	case 'v': viewpeople(); break;
         case 'q': return;
         default:
             cout << "\"" << c << "\" is not a valid selection. Try again.\n";
